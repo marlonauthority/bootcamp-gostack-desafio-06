@@ -33,16 +33,43 @@ export default class User extends Component {
   state = {
     stars: [],
     loading: true,
+    page: 1,
   };
 
   async componentDidMount() {
-    const { navigation } = this.props;
-    const user = navigation.getParam('user');
-
-    const response = await api.get(`/users/${user.login}/starred`);
-
-    this.setState({ stars: response.data, loading: false });
+    this.loadData();
   }
+
+  componentDidUpdate(_, prevState) {
+    const { page } = this.state;
+    if (prevState.page !== page) {
+      this.loadData();
+    }
+  }
+
+  loadData = async () => {
+    try {
+      const { navigation } = this.props;
+      const { stars, page } = this.state;
+      const user = navigation.getParam('user');
+
+      const response = await api.get(`/users/${user.login}/starred`, {
+        params: { page },
+      });
+
+      this.setState({
+        stars: page >= 2 ? [...stars, ...response.data] : response.data,
+        page,
+        loading: false,
+      });
+    } catch (err) {}
+  };
+
+  loadMore = () => {
+    const { page } = this.state;
+    const nextPage = page + 1;
+    this.setState({ page: nextPage });
+  };
 
   render() {
     const { navigation } = this.props;
@@ -62,6 +89,8 @@ export default class User extends Component {
           <Stars
             data={stars}
             keyExtractor={star => String(star.id)}
+            onEndReachedThreshold={0.2} // Carrega mais itens quando chegar em 20% d
+            onEndReached={this.loadMore} // Função que carrega mais itens
             renderItem={({ item }) => (
               <Starred>
                 <OwnerAvatar source={{ uri: item.owner.avatar_url }} />
