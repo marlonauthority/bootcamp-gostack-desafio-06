@@ -76,10 +76,11 @@ export const Author = styled.Text`
   color: #666;
 `;
 
-export const Loading = styled(ActivityIndicator)`
-  color: #7159c1;
+export const Loading = styled.ActivityIndicator.attrs({
+  color: '#7159c1',
+  size: 50,
+})`
+  flex: 1;
   align-items: center;
   justify-content: center;
-  align-self: stretch;
-  margin-top: 30px;
 `;
