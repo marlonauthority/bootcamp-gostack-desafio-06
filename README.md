@@ -55,3 +55,5 @@ Exemplo de código:
 ---
 
 “Só deseje as coisas as quais você está disposto a lutar”!
+
+<img src=".github/example.gif">
